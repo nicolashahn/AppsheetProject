@@ -1,6 +1,9 @@
 <html>
 	<head>
 		<style>
+			body{
+				background-color:rgb(20,20,20);
+			}
 			.imagediv{
 				width:800px;
 				margin:auto;
@@ -8,12 +11,15 @@
 				background-color:black;
 				visibility:hidden;
 			}
-			body{
-				background-color:rgb(20,20,20);
+			#loading{
+				padding:40px;
+				color:white;
+				text-align:center;
 			}
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/photoset-grid/1.0.1/jquery.photoset-grid.min.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	<body>
 		<script>
@@ -29,6 +35,7 @@
 		//////////////////////
 
 		// for putting similar-dimension images next to each other
+		// makes the grid more uniform
 		function sortByImageRatio(imgs){
 			imgs.sort(function(a,b){
 				// last 7 chars of the url are <width>/<height>
@@ -39,13 +46,27 @@
 				widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
 				return (heightA/widthA) - (heightB/widthB);
 			});
-			// getJSON returns multiple of the same picture
+			// getJSON returns multiple of the same picture, get grouped next to each other
 			// so mix them up a bit so they don't end up next to each other as often
 			for (var i = 0; i < imgs.length-3; i+=2){
 				var tmp = imgs[i];
 				imgs[i] = imgs[i+3];
 				imgs[i+3] = tmp;
 			}
+		}
+
+		// create img tag for each JSON object
+		function createImageTags(imgs){
+			for (var i = 0; i < imgs.length; i++){
+				var img = $('<img />',{
+					id: imgs[i].id,
+					class: 'images',
+					src: imgs[i].picture,
+					alt: imgs[i].text,
+				});
+				img.appendTo($('.imagediv'));
+			}
+			console.log(imgs[0]);
 		}
 
 		// creates the string that denotes how many images to put in each row
@@ -59,6 +80,39 @@
 			return layoutStr;
 		}
 
+		// on desktop, make sure grid doesn't stretch pics too much
+		// mobile, have it fill the window
+		function responsiveWidth(){
+			var width = $(window).width();
+			if (width > 750){
+				return 600;
+			} else {
+				return '80%';
+			}
+		}
+
+		// arrange in grid using photoset-grid library
+		function arrangeGrid(imgs){
+			$('.imagediv').photosetGrid({
+				// ensure an even grid in case # of images returned ever changes
+				layout: generateLayoutString(imgs.length),
+				width: responsiveWidth(),
+				gutter: '5px',
+				borderActive: true,
+				borderWidth: '2px',
+				borderRadius: '2px',
+				onInit: function(){},
+				onComplete: function(){
+					// $('.imagediv').fadeIn();
+						$('#loading').hide()
+						$('.imagediv').css({
+							'visibility':'visible'
+						});
+					console.log("finished loading images");
+				}
+			});	
+		}
+
 		////////////////////
 		// main execution //
 		////////////////////
@@ -70,45 +124,25 @@
 		});
 
 		function main(imgs){
-			// so similar-proportioned images show up next to each other
-			// makes the grid more uniform
 			sortByImageRatio(imgs);
-
-			// create img tag for each image
-			for (var i = 0; i < imgs.length; i++){
-				var img = $('<img />',{
-					id: imgs[i].id,
-					class: 'images',
-					src: imgs[i].picture,
-					alt: imgs[i].text,
-				});
-				// img.css({
-				// 	'visibility':'invisible'
-				// })
-				img.appendTo($('.imagediv'));
-			}
-			console.log(imgs[0]);
-
-			// arrange in grid using photoset-grid library
-			$('.imagediv').photosetGrid({
-				// ensure an even grid in case # of images returned ever changes
-				layout: generateLayoutString(imgs.length),
-				width: '60%',
-				gutter: '5px',
-				borderActive: true,
-				borderWidth: '2px',
-				borderRadius: '2px',
-				onInit: function(){},
-				onComplete: function(){
-					// $('.imagediv').fadeIn();
-						$('.imagediv').css({
-							'visibility':'visible'
-						});
-					console.log("finished loading images");
-				}
-			});	
+			createImageTags(imgs);
+			arrangeGrid(imgs);
 		}
+
+		// ensure responsiveness on window resize
+		$(window).resize(function(){
+			var width = $(window).width();
+			if (width > 750){
+				$('.imagediv').css('width', 600);
+			} else {
+				$('.imagediv').css('width', width*.8);
+			}
+		});
+
+		
+
 		</script>
+		<h1 id="loading">Loading images...</h1>
 		<div class="imagediv"></div>
 	</body>
 </html>
