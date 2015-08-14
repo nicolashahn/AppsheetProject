@@ -1,0 +1,104 @@
+<html>
+	<head>
+		<style>
+			.imagediv{
+				width:800px;
+				margin:auto;
+				padding:40px;
+				background-color:black;
+			}
+			body{
+				background-color:rgb(20,20,20);
+			}
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/photoset-grid/1.0.1/jquery.photoset-grid.min.js"></script>
+	</head>
+	<body>
+		<script>
+
+		/////////////
+		// globals //
+		/////////////
+
+		var url = 'https://appsheettest1.azurewebsites.net/sample/posts';
+
+		//////////////////////
+		// helper functions //
+		//////////////////////
+
+		// for putting similar-dimension images next to each other
+		function sortByImageRatio(imgs){
+			imgs.sort(function(a,b){
+				// last 7 chars of the url are <width>/<height>
+				// <http...blah/400/300> means width 400, height 300
+				heightA = parseInt(a.picture.substr(a.picture.length-3));
+				widthA = parseInt(a.picture.substr(a.picture.length-7, a.picture.length-4));
+				heightB = parseInt(b.picture.substr(b.picture.length-3));
+				widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
+				return (heightA/widthA) - (heightB/widthB);
+			});
+		}
+
+		// creates the string that denotes how many images to put in each row
+		function generateLayoutString(numImgs){
+			var i = 0;
+			layoutStr = ''
+			while (i < numImgs){
+				i += 6;
+				layoutStr = layoutStr + '123';
+			}
+			return layoutStr;
+		}
+
+		////////////////////
+		// main execution //
+		////////////////////
+
+		$.when(
+			$.getJSON(url)
+		).done( function(imgs){
+
+			// so similar-proportioned images show up next to each other
+			// makes the grid more uniform
+			sortByImageRatio(imgs);
+
+			// create img tag for each image
+			for (var i = 0; i < imgs.length; i++){
+				var img = $('<img />',{
+					id: imgs[i].id,
+					class: 'images',
+					src: imgs[i].picture,
+					alt: imgs[i].text,
+				});
+				img.css({
+					'visibility':'invisible'
+				})
+				img.appendTo($('.imagediv'));
+			}
+			// console.log(imgs);
+
+			// arrange in grid using photoset-grid extension
+			$('.imagediv').photosetGrid({
+				// ensure an even grid in case # of images returned ever changes
+				layout: generateLayoutString(imgs.length),
+				width: '60%',
+				gutter: '5px',
+				borderActive: true,
+				borderWidth: '2px',
+				borderRadius: '2px',
+				onInit: function(){},
+				onComplete: function(){
+					$('.images').css({
+						'visibility':'visible'
+					});
+					console.log("finished loading images");
+				}
+			});	
+
+		});
+
+		</script>
+		<div class="imagediv"></div>
+	</body>
+</html>
