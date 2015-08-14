@@ -6,6 +6,7 @@
 				margin:auto;
 				padding:40px;
 				background-color:black;
+				visibility:hidden;
 			}
 			body{
 				background-color:rgb(20,20,20);
@@ -38,6 +39,13 @@
 				widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
 				return (heightA/widthA) - (heightB/widthB);
 			});
+			// getJSON returns multiple of the same picture
+			// so mix them up a bit so they don't end up next to each other as often
+			for (var i = 0; i < imgs.length-3; i+=2){
+				var tmp = imgs[i];
+				imgs[i] = imgs[i+3];
+				imgs[i+3] = tmp;
+			}
 		}
 
 		// creates the string that denotes how many images to put in each row
@@ -58,7 +66,10 @@
 		$.when(
 			$.getJSON(url)
 		).done( function(imgs){
+			main(imgs);
+		});
 
+		function main(imgs){
 			// so similar-proportioned images show up next to each other
 			// makes the grid more uniform
 			sortByImageRatio(imgs);
@@ -71,14 +82,14 @@
 					src: imgs[i].picture,
 					alt: imgs[i].text,
 				});
-				img.css({
-					'visibility':'invisible'
-				})
+				// img.css({
+				// 	'visibility':'invisible'
+				// })
 				img.appendTo($('.imagediv'));
 			}
-			// console.log(imgs);
+			console.log(imgs[0]);
 
-			// arrange in grid using photoset-grid extension
+			// arrange in grid using photoset-grid library
 			$('.imagediv').photosetGrid({
 				// ensure an even grid in case # of images returned ever changes
 				layout: generateLayoutString(imgs.length),
@@ -89,15 +100,14 @@
 				borderRadius: '2px',
 				onInit: function(){},
 				onComplete: function(){
-					$('.images').css({
-						'visibility':'visible'
-					});
+					// $('.imagediv').fadeIn();
+						$('.imagediv').css({
+							'visibility':'visible'
+						});
 					console.log("finished loading images");
 				}
 			});	
-
-		});
-
+		}
 		</script>
 		<div class="imagediv"></div>
 	</body>
