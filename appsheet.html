@@ -64,6 +64,7 @@
 					src: imgs[i].picture,
 					alt: imgs[i].text,
 				});
+				// img.hover
 				img.appendTo($('.imagediv'));
 			}
 			console.log(imgs[0]);
@@ -103,7 +104,6 @@
 				borderRadius: '2px',
 				onInit: function(){},
 				onComplete: function(){
-					// $('.imagediv').fadeIn();
 						$('#loading').hide()
 						$('.imagediv').css({
 							'visibility':'visible'
@@ -111,6 +111,15 @@
 					console.log("finished loading images");
 				}
 			});	
+		}
+
+		function setHoverText(pCols){
+			$('.images').mouseover(function(){
+				$(this).animate({opacity:0.4});
+			});
+			$('.images').mouseout(function(){
+				$(this).animate({opacity:1});
+			});
 		}
 
 		////////////////////
@@ -127,6 +136,7 @@
 			sortByImageRatio(imgs);
 			createImageTags(imgs);
 			arrangeGrid(imgs);
+			setHoverText();
 		}
 
 		// ensure responsiveness on window resize
@@ -139,7 +149,6 @@
 			}
 		});
 
-		
 
 		</script>
 		<h1 id="loading">Loading images...</h1>
