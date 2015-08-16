@@ -11,10 +11,23 @@
 				background-color:black;
 				visibility:hidden;
 			}
+			.images{
+				position:relative;
+				float:left;
+			}
 			#loading{
 				padding:40px;
 				color:white;
 				text-align:center;
+			}
+			.captions{
+				text-align:center;
+				font-size:11px;
+				font-weight:300;
+				display:block;
+				color:white;
+				padding-left:10px;
+				padding-right:10px;
 			}
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -29,6 +42,10 @@
 		/////////////
 
 		var url = 'https://appsheettest1.azurewebsites.net/sample/posts';
+		// ratio of text to imagediv's size
+		var captionFontSize = 1/40;
+		// maximum width of imagediv
+		var maxWidth = 750;
 
 		//////////////////////
 		// helper functions //
@@ -64,10 +81,8 @@
 					src: imgs[i].picture,
 					alt: imgs[i].text,
 				});
-				// img.hover
 				img.appendTo($('.imagediv'));
 			}
-			console.log(imgs[0]);
 		}
 
 		// creates the string that denotes how many images to put in each row
@@ -75,8 +90,8 @@
 			var i = 0;
 			layoutStr = ''
 			while (i < numImgs){
-				i += 6;
-				layoutStr = layoutStr + '123';
+				i += 3;
+				layoutStr = layoutStr + '12';
 			}
 			return layoutStr;
 		}
@@ -85,8 +100,8 @@
 		// mobile, have it fill the window
 		function responsiveWidth(){
 			var width = $(window).width();
-			if (width > 750){
-				return 600;
+			if (width > maxWidth){
+				return maxWidth-(1/5*maxWidth);
 			} else {
 				return '80%';
 			}
@@ -98,7 +113,7 @@
 				// ensure an even grid in case # of images returned ever changes
 				layout: generateLayoutString(imgs.length),
 				width: responsiveWidth(),
-				gutter: '5px',
+				gutter: '5px', 
 				borderActive: true,
 				borderWidth: '2px',
 				borderRadius: '2px',
@@ -108,17 +123,60 @@
 						$('.imagediv').css({
 							'visibility':'visible'
 						});
+						setCaptions();
 					console.log("finished loading images");
 				}
 			});	
+			$('.images').height($('.images').parent().height());
 		}
 
-		function setHoverText(pCols){
-			$('.images').mouseover(function(){
-				$(this).animate({opacity:0.4});
+		// fade out image, show image's alt text when hovered over
+		function setCaptions(){
+			$('.images').map(function(){
+				pcell = $(this).parent()
+				var cap = $('<div />').attr({
+					class: 'captions',
+					width: pcell.width(),
+					height: pcell.parent().height()
+				});
+				cap.text($(this).attr('alt'));
+				cap.insertBefore($(this));
+				cap.css({opacity: 0});
+				cap.offset({
+					top: pcell.offset().top,
+					left: pcell.offset().left
+				});
+				// to make sure captions have enough space
+				var img = pcell.find('img');
+				img.offset({
+					top: pcell.parent().offset().top-cap.height()
+				});
+			})
+			// ensure text is sized correctly for screen
+			$('.captions').css('font-size',(captionFontSize*$('.imagediv').width()));
+			// fade out
+			$('.photoset-cell').mouseenter(function(){
+				var img = $(this).find('img')
+				img.animate({opacity:0.4});
+				var cap = $(this).find('div.captions');
+				cap.animate({
+					lineHeight:   		cap.css('font-size'),
+					paddingTop: 		cap.css('font-size'),
+					paddingBottom: 	cap.css('font-size'),
+					opacity: 			1
+				},300,'swing');
 			});
-			$('.images').mouseout(function(){
-				$(this).animate({opacity:1});
+			// fade back in
+			$('.photoset-cell').mouseleave(function(){
+				var img = $(this).find('img')
+				img.animate({opacity:1});
+				var cap = $(this).find('div.captions');
+				cap.animate({
+					lineHeight:   		0,
+					paddingTop: 		0,
+					paddingBottom: 	0,
+					opacity: 			0
+				},300,'swing');
 			});
 		}
 
@@ -136,22 +194,23 @@
 			sortByImageRatio(imgs);
 			createImageTags(imgs);
 			arrangeGrid(imgs);
-			setHoverText();
 		}
 
 		// ensure responsiveness on window resize
 		$(window).resize(function(){
 			var width = $(window).width();
-			if (width > 750){
-				$('.imagediv').css('width', 600);
+			if (width > maxWidth){
+				$('.imagediv').css('width', maxWidth-(1/5*(maxWidth)));
 			} else {
 				$('.imagediv').css('width', width*.8);
 			}
+			$('.captions').css('font-size',(captionFontSize*$('.imagediv').width()));
 		});
 
-
 		</script>
+
 		<h1 id="loading">Loading images...</h1>
 		<div class="imagediv"></div>
+
 	</body>
 </html>
