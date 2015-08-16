@@ -2,32 +2,32 @@
 	<head>
 		<style>
 			body{
-				background-color:rgb(20,20,20);
+				background-color:	rgb(20,20,20);
 			}
 			.imagediv{
-				width:800px;
-				margin:auto;
-				padding:40px;
-				background-color:black;
-				visibility:hidden;
+				width:				800px;
+				margin:				auto;
+				padding:				40px;
+				background-color:	black;
+				visibility:			hidden;
 			}
 			.images{
-				position:relative;
-				float:left;
+				position:			relative;
+				float:				left;
 			}
 			#loading{
-				padding:40px;
-				color:white;
-				text-align:center;
+				padding:				40px;
+				color:				white;
+				text-align:			center;
 			}
 			.captions{
-				text-align:center;
-				font-size:11px;
-				font-weight:300;
-				display:block;
-				color:white;
-				padding-left:10px;
-				padding-right:10px;
+				text-align:			center;
+				font-size:			11px;
+				font-weight:		300;
+				display:				block;
+				color:				white;
+				padding-left:		10px;
+				padding-right:		10px;
 			}
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -42,8 +42,10 @@
 		/////////////
 
 		var url = 'https://appsheettest1.azurewebsites.net/sample/posts';
+		
 		// ratio of text to imagediv's size
 		var captionFontSize = 1/40;
+
 		// maximum width of imagediv
 		var maxWidth = 750;
 
@@ -132,6 +134,7 @@
 
 		// fade out image, show image's alt text when hovered over
 		function setCaptions(){
+			// create captions for each image
 			$('.images').map(function(){
 				pcell = $(this).parent()
 				var cap = $('<div />').attr({
