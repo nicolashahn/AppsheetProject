@@ -65,13 +65,6 @@
 				widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
 				return (heightA/widthA) - (heightB/widthB);
 			});
-			// getJSON returns multiple of the same picture, get grouped next to each other
-			// so mix them up a bit so they don't end up next to each other as often
-			for (var i = 0; i < imgs.length-3; i+=2){
-				var tmp = imgs[i];
-				imgs[i] = imgs[i+3];
-				imgs[i+3] = tmp;
-			}
 		}
 
 		// create img tag for each JSON object
