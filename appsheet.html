@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<style>
@@ -7,7 +8,7 @@
 			.imagediv{
 				width:				800px;
 				margin:				auto;
-				padding:				40px;
+				padding:			40px;
 				background-color:	black;
 				visibility:			hidden;
 			}
@@ -16,7 +17,7 @@
 				float:				left;
 			}
 			#loading{
-				padding:				40px;
+				padding:			40px;
 				color:				white;
 				text-align:			center;
 			}
@@ -24,7 +25,7 @@
 				text-align:			center;
 				font-size:			11px;
 				font-weight:		300;
-				display:				block;
+				display:			block;
 				color:				white;
 				padding-left:		10px;
 				padding-right:		10px;
@@ -59,10 +60,10 @@
 			imgs.sort(function(a,b){
 				// last 7 chars of the url are <width>/<height>
 				// <http...blah/400/300> means width 400, height 300
-				heightA = parseInt(a.picture.substr(a.picture.length-3));
-				widthA = parseInt(a.picture.substr(a.picture.length-7, a.picture.length-4));
-				heightB = parseInt(b.picture.substr(b.picture.length-3));
-				widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
+				var heightA = parseInt(a.picture.substr(a.picture.length-3));
+				var widthA = parseInt(a.picture.substr(a.picture.length-7, a.picture.length-4));
+				var heightB = parseInt(b.picture.substr(b.picture.length-3));
+				var widthB = parseInt(b.picture.substr(b.picture.length-7, b.picture.length-4));
 				return (heightA/widthA) - (heightB/widthB);
 			});
 		}
@@ -82,10 +83,8 @@
 
 		// creates the string that denotes how many images to put in each row
 		function generateLayoutString(numImgs){
-			var i = 0;
-			layoutStr = ''
-			while (i < numImgs){
-				i += 3;
+			var layoutStr = ''
+			for (var i = 0; i < numImgs; i += 3){
 				layoutStr = layoutStr + '12';
 			}
 			return layoutStr;
@@ -129,7 +128,7 @@
 		function setCaptions(){
 			// create captions for each image
 			$('.images').map(function(){
-				pcell = $(this).parent()
+				var pcell = $(this).parent()
 				var cap = $('<div />').attr({
 					class: 'captions',
 					width: pcell.width(),
